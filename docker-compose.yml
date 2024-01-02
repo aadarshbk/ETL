@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  code:
+    build: ./code
+    restart: on-failure
+    ports:
+      - 80:5001
+    depends_on:
+      postgres1:
+        condition: service_started
+
+  fastapi:
+    build: ./api
+    restart: on-failure
+    ports:
+      - 90:8000
+    depends_on:
+      code:
+        condition: service_completed_successfully
+  
+  postgres1:
+    image: postgres
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
